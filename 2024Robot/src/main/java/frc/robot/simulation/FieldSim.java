@@ -42,19 +42,6 @@ public class FieldSim {
     return m_field2d;
   }
 
-  public void setTrajectory(List<PathPlannerTrajectory> trajectories) {
-    List<Pose2d> trajectoryPoses = new ArrayList<>();
-
-    for (var trajectory : trajectories) {
-      trajectoryPoses.addAll(
-          trajectory.getStates().stream()
-              .map(state -> state.poseMeters)
-              .collect(Collectors.toList()));
-    }
-
-    m_field2d.getObject("trajectory").setPoses(trajectoryPoses);
-  }
-
   public void setTrajectory(Trajectory trajectory) {
     m_field2d.getObject("trajectory").setTrajectory(trajectory);
   }

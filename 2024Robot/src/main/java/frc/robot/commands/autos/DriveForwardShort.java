@@ -3,6 +3,7 @@ package frc.robot.commands.autos;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.util.Units;
@@ -15,21 +16,15 @@ import frc.robot.utils.TrajectoryUtils;
 
 public class DriveForwardShort extends SequentialCommandGroup {
   public DriveForwardShort(
-      String pathName,
-      AutoBuilder autoBuilder,
-      SwerveDrive swerveDrive,
-      FieldSim fieldSim) {
+      String autoName,
+      SwerveDrive swerveDrive) {
 
-    var trajectory =
-        TrajectoryUtils.readTrajectory(
-            pathName, new PathConstraints(Units.feetToMeters(9), Units.feetToMeters(9)));
-
-    var autoPath = autoBuilder.fullAuto(trajectory);
+    var autoPath = AutoBuilder.buildAuto(autoName);
 
     addCommands(
         //        new SetSwerveOdometry(swerveDrive, trajectory.get(0).getInitialHolonomicPose(),
         // fieldSim),
-        new PlotAutoTrajectory(fieldSim, pathName, trajectory), 
+//        new PlotAutoTrajectory(fieldSim, autoName, trajectory),
         autoPath,
         new SetSwerveNeutralMode(swerveDrive, IdleMode.kBrake)
             .andThen(() -> swerveDrive.drive(0, 0, 0, false, false)));

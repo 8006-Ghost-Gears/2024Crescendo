@@ -6,7 +6,7 @@ package frc.robot.subsystems.swerve;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix.unmanaged.Unmanaged;
+import com.ctre.phoenix6.sim.Pigeon2SimState;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -76,6 +76,7 @@ public class SwerveDrive extends SubsystemBase {
                       331.875)));
 
   private final Pigeon2 m_pigeon = new Pigeon2(CAN.pigeon, "rio");
+  private final Pigeon2SimState m_pigeonSimState = m_pigeon.getSimState();
   private Trajectory m_trajectory;
   
   private final SwerveDrivePoseEstimator m_odometry;
@@ -209,15 +210,15 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public double getPitchDegrees() {
-    return m_pigeon.getPitch();
+    return m_pigeon.getPitch().getValue();
   }
 
   public double getRollDegrees() {
-    return m_pigeon.getRoll();
+    return m_pigeon.getRoll().getValue();
   }
 
   public double getHeadingDegrees() {
-    return m_pigeon.getYaw();
+    return m_pigeon.getYaw().getValue();
     // return 0;
   }
 
@@ -232,6 +233,11 @@ public class SwerveDrive extends SubsystemBase {
       }
     }
     return true;
+  }
+
+  public ChassisSpeeds getChassisSpeeds() {
+    return Constants.SwerveDrive.kSwerveKinematics.toChassisSpeeds(
+            ModuleMap.orderedValues(getModuleStates(), new SwerveModuleState[0]));
   }
 
   public Pose2d getPoseMeters() {
@@ -292,7 +298,6 @@ public class SwerveDrive extends SubsystemBase {
 
   public void resetGyro() {
     m_pigeon.setYaw(0);
-    m_pigeon.getAccumGyroZ(0.0); //setAccumZAngle
   }
 
   public void updateOdometry() {
@@ -352,7 +357,6 @@ public class SwerveDrive extends SubsystemBase {
 
     m_simYaw += chassisSpeed.omegaRadiansPerSecond * 0.02;
 
-    Unmanaged.feedEnable(20);
-    m_pigeon.getSimCollection().setRawHeading(-Units.radiansToDegrees(m_simYaw));
+    m_pigeonSimState.setRawYaw(m_simYaw);
   }
 }

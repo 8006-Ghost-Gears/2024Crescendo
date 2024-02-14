@@ -6,14 +6,17 @@ package frc.robot;
 
 import java.util.HashMap;
 
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
@@ -144,7 +147,7 @@ public class RobotContainer {
     //Cero para Rivera
 
     m_autoChooser.addOption(
-       "DriveForwardShort", new DriveForwardShort("DriveForwardShort", m_autoBuilder, m_swerveDrive, m_fieldSim));
+       "DriveForwardShort", new DriveForwardShort("DriveForwardShort", m_swerveDrive));
     SmartDashboard.putData("Auto Selector", m_autoChooser);
 
 
@@ -158,24 +161,23 @@ public class RobotContainer {
 
   private void initAutoBuilder() {
     m_eventMap.put("wait", new WaitCommand(2));
-  
-    m_autoBuilder =
-        new SwerveAutoBuilder(
+
+    // See https://pathplanner.dev/pplib-build-an-auto.html#configure-autobuilder for an explanation
+    AutoBuilder.configureHolonomic(
             m_swerveDrive::getPoseMeters,
             m_swerveDrive::setOdometry,
-            Constants.SwerveDrive.kSwerveKinematics,
-            new PIDConstants(
-                Constants.SwerveDrive.kP_Translation,
-                Constants.SwerveDrive.kI_Translation,
-                Constants.SwerveDrive.kD_Translation),
-            new PIDConstants(
-                Constants.SwerveDrive.kP_Rotation,
-                Constants.SwerveDrive.kI_Rotation,
-                Constants.SwerveDrive.kD_Rotation),
-            m_swerveDrive::setSwerveModuleStatesAuto,
-            m_eventMap,
-            false,
-            m_swerveDrive);
+            m_swerveDrive::getChassisSpeeds,
+            m_swerveDrive::setChassisSpeed,
+            new HolonomicPathFollowerConfig(
+                    new PIDConstants(Constants.SwerveDrive.kP_Translation, Constants.SwerveDrive.kI_Translation, Constants.SwerveDrive.kD_Translation),
+                    new PIDConstants(Constants.SwerveDrive.kP_Rotation, Constants.SwerveDrive.kI_Rotation, Constants.SwerveDrive.kD_Rotation),
+                    Constants.SwerveDrive.kMaxSpeedMetersPerSecond,
+                    0.86210458762,
+                    new ReplanningConfig()
+            ),
+            ()-> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red,
+            m_swerveDrive
+    );
   }
   public void disableInit() {
     m_swerveDrive.setNeutralMode(IdleMode.kBrake);

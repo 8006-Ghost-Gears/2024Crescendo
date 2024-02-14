@@ -7,6 +7,7 @@ package frc.robot.subsystems.swerve;
 import static frc.robot.Constants.SwerveDrive.kMaxSpeedMetersPerSecond;
 import static frc.robot.Constants.SwerveModule.*;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -88,7 +89,7 @@ private final int m_moduleNumber;
    
   private void initCanCoder() {
         Timer.delay(1);
-        m_CANCoder.configFactoryDefault();
+        m_CANCoder.getConfigurator().apply(new CANcoderConfiguration());
         m_initSuccess = true;
       }
 
@@ -107,7 +108,7 @@ private final int m_moduleNumber;
     
       public void resetAngleToAbsolute() {
         double angle = getCANCoderHeadingDegrees() - m_angleOffset;
-        m_turnEncoder.setPosition(angle);
+        m_turnEncoder.setPosition(angle / 360.0);
       }
     
       public void resetDistance() {
@@ -182,8 +183,9 @@ private final int m_moduleNumber;
       public void setTurnNeutralMode(IdleMode m_mode) {
         m_turnMotor.setIdleMode(m_mode);
       }
+
       public double getCANCoderHeadingDegrees() {
-        return m_CANCoder.getAbsolutePosition();
+        return m_CANCoder.getAbsolutePosition().getValue() * 360.0;
       }
     
     
