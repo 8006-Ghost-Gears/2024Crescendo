@@ -48,4 +48,20 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }
+
+  public static class CAN 
+  {
+    //CLIMBER CONSTANTS
+    public static final int leftClimber = 32;
+    public static final int rightClimber = 33;
+
+    //INTAKE CONSTANTS
+    public static final int feeder = 34;
+    public static final int intake = 35;
+
+    //SHOOTER CONSTANTS
+    public static final int pivot = 36;
+
+
+  }
 }
