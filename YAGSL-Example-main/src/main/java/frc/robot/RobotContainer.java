@@ -9,12 +9,24 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DriveTeamConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.intake.FeederIntakeCommand;
+import frc.robot.commands.intake.FeederOuttakeCommand;
+import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.intake.IntakeRetractedCommand;
+import frc.robot.commands.climber.ClimberUpPosition;
+import frc.robot.commands.climber.ClimberUp;
+import frc.robot.commands.climber.ClimberDownPosition;
+import frc.robot.commands.climber.ClimberDown;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -33,43 +45,71 @@ public class RobotContainer
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
 
-  private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
+  public static ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
-  private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+  public static IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  final CommandXboxController driverXbox = new CommandXboxController(0);
+  private final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
+
+  private final PS4Controller operator = new PS4Controller(DriveTeamConstants.operator);
+
+  private final PS4Controller tester = new PS4Controller(DriveTeamConstants.tester);
+
+  // INTAKE BUTTONS
+  JoystickButton Intake = new JoystickButton(operator, 7);
+  JoystickButton Outtake = new JoystickButton(operator, 8);
+  // RETRACTED OR OUT
+  JoystickButton Retracted = new JoystickButton(operator, 12);
+  JoystickButton Out = new JoystickButton(operator, 11);
+
+
+  // CLIMBER BUTTONS
+  POVButton ClimberUpPosition = new POVButton(operator, 0);
+  POVButton ClimberDownPosition = new POVButton(operator, 180);
+  // CLIMBER UP AND DOWN ON TESTER CONTROLLER
+  POVButton ClimberUp = new POVButton(tester, 0);
+  POVButton ClimberDown = new POVButton(tester, 180);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
+
+   /*
+ * POV is the D-Pad, Example: POVButton handOpen = new POVButton(operator, 90);
+ * The POV buttons are referred to by the angle. Up is 0, right is 90, down is 180, and left is 270.
+ * buttonNumber 1 is Square on a PS4 Controller
+ * buttonNumber 2 is X on a PS4 Controller
+ * buttonNumber 3 is Circle on a PS4 Controller
+ * buttonNumber 4 is Triangle on a PS4 Controller
+ * buttonNumber 5 is L1 on a PS4 Controller
+ * buttonNumber 6 is R1 on a PS4 Controller
+ * buttonNumber 7 is L2 on a PS4 Controller
+ * buttonNumber 8 is R2 on a PS4 Controller
+ * buttonNumber 9 is SHARE on a PS4 Controller
+ * buttonNumber 10 is OPTIONS on a PS4 Controller
+ * buttonNumber 11 is L3 on a PS4 Controller
+ * buttonNumber 12 is R3 on a PS4 Controller
+ * buttonNumber 13 is the PlayStaion Button on a PS4 Controller
+ * buttonNumber 14 is the Touchpad on a PS4 Controller
+ * 
+ * https://www.chiefdelphi.com/t/make-motor-move-at-a-specific-rpm/396774
+ * Click this link if your trying to send a motor to a certain position
+ * 
+ * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/index.html
+ * Click this link if your trying to send a motor to a certain position
+ * 
+ * If you ever run into that problem like The Java Server Crashed 5 Times and will not be restarted, (worked for me)
+ * then just delete all the WPILIB VS Codes and The Visual Studio Code that is on the pc, this is because Wpilib uses their own
+ * VS Code when you install the latest version!
+ */
   public RobotContainer()
   {
     // Configure the trigger bindings
+    
     configureBindings();
-
-    AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                OperatorConstants.LEFT_X_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                   driverXbox.getHID()::getYButtonPressed,
-                                                                   driverXbox.getHID()::getAButtonPressed,
-                                                                   driverXbox.getHID()::getXButtonPressed,
-                                                                   driverXbox.getHID()::getBButtonPressed);
-
-    // Applies deadbands and inverts controls because joysticks
-    // are back-right positive while robot
-    // controls are front-left positive
-    // left stick controls translation
-    // right stick controls the desired angle NOT angular rotation
-    Command driveFieldOrientedDirectAngle = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driverXbox.getRightX(),
-        () -> -driverXbox.getRightY());
+    
+    
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -77,14 +117,14 @@ public class RobotContainer
     // left stick controls translation
     // right stick controls the angular velocity of the robot
     Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driverXbox.getRightX());
+        () -> -MathUtil.applyDeadband(driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -driver.getRightX());
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driverXbox.getRawAxis(2));
+        () -> -MathUtil.applyDeadband(driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -driver.getRawAxis(2));
 
     drivebase.setDefaultCommand(
         !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
@@ -99,15 +139,24 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    // FEEDER BUTTONS
+    Intake.whileTrue(new FeederIntakeCommand());
+    Outtake.whileTrue(new FeederOuttakeCommand());
+    // INTAKE BUTTONS
+    Retracted.onTrue(new IntakeRetractedCommand());
+    Out.onTrue(new IntakeOutCommand());
 
-    driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    driverXbox.b().whileTrue(
-        Commands.deferredProxy(() -> drivebase.driveToPose(
-                                   new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              ));
-    // driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+    // CLIMBER BUTTONS
+    ClimberUpPosition.onTrue(new ClimberUpPosition());
+    ClimberDownPosition.onTrue(new ClimberDownPosition());
+    // CLIMBER TESTER BUTTONS
+    ClimberUp.whileTrue(new ClimberUp());
+    ClimberDown.whileTrue(new ClimberDown());
+
+
+    
+    
+
   }
 
   /**

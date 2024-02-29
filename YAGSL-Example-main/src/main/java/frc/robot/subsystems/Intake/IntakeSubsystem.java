@@ -71,7 +71,7 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
 
         pidController.setTolerance(kIntakeTolerance);
 
-        intake.getPIDController().setOutputRange(-0.80, 0.80);
+        intake.getPIDController().setOutputRange(-0.30, 0.30);
 
         intake.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
 
@@ -99,7 +99,7 @@ public void IntakeOut() {
 
         pidController.setTolerance(kIntakeTolerance);
 
-        intake.getPIDController().setOutputRange(-0.80, 0.80);
+        intake.getPIDController().setOutputRange(-0.30, 0.30);
 
         intake.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
 

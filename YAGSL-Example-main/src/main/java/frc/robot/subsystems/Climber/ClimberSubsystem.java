@@ -84,8 +84,8 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
 
         pidController.setTolerance(kClimberTolerance);
 
-        leftClimber.getPIDController().setOutputRange(-0.80, 0.80);
-        rightClimber.getPIDController().setOutputRange(-0.80, 0.80);
+        leftClimber.getPIDController().setOutputRange(-0.50, 0.50);
+        rightClimber.getPIDController().setOutputRange(-0.50, 0.50);
 
         leftClimber.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
         rightClimber.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
@@ -118,8 +118,8 @@ public void ClimberUp() {
 
       pidController.setTolerance(kClimberTolerance);
 
-      leftClimber.getPIDController().setOutputRange(-0.80, 0.80);
-      rightClimber.getPIDController().setOutputRange(-0.80, 0.80);
+      leftClimber.getPIDController().setOutputRange(-0.50, 0.50);
+      rightClimber.getPIDController().setOutputRange(-0.50, 0.50);
 
       leftClimber.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
       rightClimber.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);

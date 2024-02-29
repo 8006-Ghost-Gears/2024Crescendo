@@ -39,6 +39,15 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
+  public static class DriveTeamConstants
+  {
+    public static final int driver = 0;
+    public static final int operator = 1;
+    
+    public static final int tester = 5;
+
+  }
+
   public static class OperatorConstants
   {
 
