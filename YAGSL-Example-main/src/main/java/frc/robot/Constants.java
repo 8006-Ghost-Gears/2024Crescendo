@@ -70,7 +70,10 @@ public final class Constants
 
     //SHOOTER CONSTANTS
     public static final int pivot = 36;
-
+    public static final int shooterLeftOne = 37;
+    public static final int shooterLeftTwo = 38;
+    public static final int shooterRightOne = 39;
+    public static final int shooterRightTwo= 40;
 
   }
 }

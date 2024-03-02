@@ -25,6 +25,9 @@ import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeOutManual;
 import frc.robot.commands.intake.IntakeRetractedCommand;
 import frc.robot.commands.intake.IntakeRetractedManual;
+import frc.robot.commands.shooter.ShooterPivotBackManual;
+import frc.robot.commands.shooter.ShooterPivotForwardManual;
+import frc.robot.commands.shooter.ShooterShootCommand;
 import frc.robot.commands.climber.ClimberUpPosition;
 import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
@@ -32,8 +35,11 @@ import frc.robot.commands.climber.ClimberDown;
 import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+
+import javax.print.attribute.standard.JobKOctetsSupported;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -51,6 +57,8 @@ public class RobotContainer
 
   public static IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
 
+  public static ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
 
@@ -59,12 +67,15 @@ public class RobotContainer
   private final PS4Controller tester = new PS4Controller(DriveTeamConstants.tester);
 
   // INTAKE BUTTONS
-  JoystickButton Intake = new JoystickButton(operator, 7);
-  JoystickButton Outtake = new JoystickButton(operator, 8);
+  JoystickButton Intake = new JoystickButton(operator, 5);
+  JoystickButton Outtake = new JoystickButton(operator, 6);
   // RETRACTED OR OUT
   JoystickButton Retracted = new JoystickButton(operator, 12);
   JoystickButton Out = new JoystickButton(operator, 11);
-
+  //shooter buttons
+  JoystickButton Forward = new JoystickButton(operator, 4);
+  JoystickButton back = new JoystickButton(operator, 2);
+  JoystickButton Shoot = new JoystickButton(operator, 8);
 
   // CLIMBER BUTTONS
   POVButton ClimberUpPosition = new POVButton(tester, 0);
@@ -147,6 +158,11 @@ public class RobotContainer
     // INTAKE BUTTONS
     Retracted.whileTrue(new IntakeRetractedManual());
     Out.whileTrue(new IntakeOutManual());
+
+    //Shooter Buttons
+    Forward.whileTrue(new ShooterPivotForwardManual());
+    back.whileTrue(new ShooterPivotBackManual());
+    Shoot.whileTrue(new ShooterShootCommand());
 
     // CLIMBER BUTTONS
     ClimberUpPosition.onTrue(new ClimberUpPosition());
