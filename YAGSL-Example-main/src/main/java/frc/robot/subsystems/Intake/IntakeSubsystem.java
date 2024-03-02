@@ -108,8 +108,11 @@ public void IntakeOut() {
  
 
 public void stopIntake(){
-  feeder.set(0); // elijah allen is not the best button boy, but his sister thoooooooo ;) Jonah:)
   intake.set(0);
+}
+
+public void stopFeeder(){
+  feeder.set(0);
 }
 
   @Override

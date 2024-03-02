@@ -22,7 +22,9 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.intake.FeederIntakeCommand;
 import frc.robot.commands.intake.FeederOuttakeCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
+import frc.robot.commands.intake.IntakeOutManual;
 import frc.robot.commands.intake.IntakeRetractedCommand;
+import frc.robot.commands.intake.IntakeRetractedManual;
 import frc.robot.commands.climber.ClimberUpPosition;
 import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
@@ -65,11 +67,11 @@ public class RobotContainer
 
 
   // CLIMBER BUTTONS
-  POVButton ClimberUpPosition = new POVButton(operator, 0);
-  POVButton ClimberDownPosition = new POVButton(operator, 180);
+  POVButton ClimberUpPosition = new POVButton(tester, 0);
+  POVButton ClimberDownPosition = new POVButton(tester, 180);
   // CLIMBER UP AND DOWN ON TESTER CONTROLLER
-  POVButton ClimberUp = new POVButton(tester, 0);
-  POVButton ClimberDown = new POVButton(tester, 180);
+  POVButton ClimberUp = new POVButton(operator, 0);
+  POVButton ClimberDown = new POVButton(operator, 180);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -143,8 +145,8 @@ public class RobotContainer
     Intake.whileTrue(new FeederIntakeCommand());
     Outtake.whileTrue(new FeederOuttakeCommand());
     // INTAKE BUTTONS
-    Retracted.onTrue(new IntakeRetractedCommand());
-    Out.onTrue(new IntakeOutCommand());
+    Retracted.whileTrue(new IntakeRetractedManual());
+    Out.whileTrue(new IntakeOutManual());
 
     // CLIMBER BUTTONS
     ClimberUpPosition.onTrue(new ClimberUpPosition());

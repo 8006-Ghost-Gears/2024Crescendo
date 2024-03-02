@@ -1,4 +1,3 @@
-
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -8,9 +7,9 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
-public class FeederIntakeCommand extends Command {
-  /** Creates a new IntakeCommand. */
-  public FeederIntakeCommand() {
+public class IntakeOutManual extends Command {
+  /** Creates a new IntakeOutManual. */
+  public IntakeOutManual() {
     addRequirements(RobotContainer.m_IntakeSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -22,13 +21,13 @@ public class FeederIntakeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.m_IntakeSubsystem.Feeder(0.8);
+    RobotContainer.m_IntakeSubsystem.Intake(0.2);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.m_IntakeSubsystem.stopFeeder();
+    RobotContainer.m_IntakeSubsystem.stopIntake();
   }
 
   // Returns true when the command should end.

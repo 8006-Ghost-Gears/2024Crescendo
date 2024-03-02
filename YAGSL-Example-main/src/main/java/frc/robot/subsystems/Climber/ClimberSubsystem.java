@@ -40,7 +40,6 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
     rightClimber.restoreFactoryDefaults();
     rightClimber.setInverted(true);
     rightClimber.getEncoder().setPosition(0);
-    rightClimber.follow(leftClimber, true);
 
   }
 
@@ -50,18 +49,27 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
     // Check if current position is greater than -1
     if (leftClimber.getEncoder().getPosition() > 0)
     {
-      leftClimber.set(speed);
-      rightClimber.set(speed);
-    }
-    else
-    {
       leftClimber.set(-speed);
       rightClimber.set(-speed);
     }
+    else
+    {
+      leftClimber.set(speed);
+      rightClimber.set(speed);
+    }
   }
   public void ClimberUp(double speed) {
+    if (leftClimber.getEncoder().getPosition() < 40.404354095458984)
+    {
     leftClimber.set(-speed);
     rightClimber.set(-speed);
+    }
+    else
+    {
+      leftClimber.set(speed);
+      rightClimber.set(speed);
+
+    }
   }
 
   public void ClimberDown() {
