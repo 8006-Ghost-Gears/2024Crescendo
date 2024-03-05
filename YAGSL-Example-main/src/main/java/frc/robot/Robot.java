@@ -28,6 +28,8 @@ public class Robot extends TimedRobot
 
   private Timer disabledTimer;
 
+  private SendableChooser<String> AutoChooser;
+
   public Robot()
   {
     instance = this;
