@@ -59,9 +59,19 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
   {
       shooterLeftOne.set(speed);
       shooterLeftTwo.set(speed);
-      shooterRightOne.set(-speed);
-      shooterRightTwo.set(-speed);
+      shooterRightOne.set(speed);
+      shooterRightTwo.set(speed);
     }
+
+    public void ShooterIntake(double speed)
+    {
+      shooterLeftOne.set(speed);
+      shooterLeftTwo.set(speed);
+      shooterRightOne.set(speed);
+      shooterRightTwo.set(speed);
+
+    }
+
 //sets pivot speed
   public void pivot(double speed) {
     pivot.set(speed);

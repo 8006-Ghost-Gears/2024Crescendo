@@ -7,13 +7,11 @@ package frc.robot.commands.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
-public class ShooterShootCommand extends Command {
-  /** Creates a new ShooterShootCommand. */
-
-  // creates command to shoot
-  public ShooterShootCommand() {
-    // Use addRequirements() here to declare subsystem dependencies.
+public class ShooterShootIntakeCommand extends Command {
+  /** Creates a new ShooterShootIntakeCommand. */
+  public ShooterShootIntakeCommand() {
     addRequirements(RobotContainer.m_ShooterSubsystem);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -22,15 +20,13 @@ public class ShooterShootCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
-  {
-    RobotContainer.m_ShooterSubsystem.Shooter(1);
+  public void execute() {
+    RobotContainer.m_ShooterSubsystem.ShooterIntake(.5);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) 
-  {
+  public void end(boolean interrupted) {
     RobotContainer.m_ShooterSubsystem.stopShooter();
   }
 

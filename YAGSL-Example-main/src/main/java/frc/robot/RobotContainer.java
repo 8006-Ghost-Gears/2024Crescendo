@@ -11,6 +11,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,6 +31,7 @@ import frc.robot.commands.intake.IntakeRetractedManual;
 import frc.robot.commands.shooter.ShooterPivotBackManual;
 import frc.robot.commands.shooter.ShooterPivotForwardManual;
 import frc.robot.commands.shooter.ShooterShootCommand;
+import frc.robot.commands.shooter.ShooterShootIntakeCommand;
 import frc.robot.commands.climber.ClimberUpPosition;
 import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
@@ -40,6 +44,8 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 
 import javax.print.attribute.standard.JobKOctetsSupported;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -59,12 +65,17 @@ public class RobotContainer
 
   public static ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
+  private final SendableChooser<Command> autoChooser;
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
 
   private final PS4Controller operator = new PS4Controller(DriveTeamConstants.operator);
 
   private final PS4Controller tester = new PS4Controller(DriveTeamConstants.tester);
+
+  //LIMELIGHT BUTTONS
+  JoystickButton DistanceShoot = new JoystickButton(driver, 6);
 
   // INTAKE BUTTONS
   JoystickButton Intake = new JoystickButton(operator, 5);
@@ -75,7 +86,8 @@ public class RobotContainer
   //shooter buttons
   JoystickButton Forward = new JoystickButton(operator, 4);
   JoystickButton back = new JoystickButton(operator, 2);
-  JoystickButton Shoot = new JoystickButton(operator, 8);
+  JoystickButton IntakeShooter = new JoystickButton(operator, 7);
+  JoystickButton Shooter = new JoystickButton(operator, 8);
 
   // CLIMBER BUTTONS
   POVButton ClimberUpPosition = new POVButton(tester, 0);
@@ -141,6 +153,48 @@ public class RobotContainer
 
     drivebase.setDefaultCommand(
         !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+    Shuffleboard.getTab("Pre-Match").add("Auto Chooser", autoChooser);
+
+  }
+
+  // simple proportional turning control with Limelight.
+  // "proportional control" is a control algorithm in which the output is proportional to the error.
+  // in this case, we are going to return an angular velocity that is proportional to the 
+  // "tx" value from the Limelight.
+  double limelight_aim_proportional()
+  {    
+    // kP (constant of proportionality)
+    // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
+    // if it is too high, the robot will oscillate around.
+    // if it is too low, the robot will never reach its target
+    // if the robot never turns in the correct direction, kP should be inverted.
+    double kP = .035;
+
+    // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
+    // your limelight 3 feed, tx should return roughly 31 degrees.
+    double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+
+    // convert to radians per second for our drive method
+    targetingAngularVelocity *= drivebase.kMaxAngularSpeed;
+
+    //invert since tx is positive when the target is to the right of the crosshair
+    targetingAngularVelocity *= -1.0;
+
+    return targetingAngularVelocity;
+  }
+
+  // simple proportional ranging control with Limelight's "ty" value
+  // this works best if your Limelight's mount height and target mount height are different.
+  // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
+  double limelight_range_proportional()
+  {    
+    double kP = .1;
+    double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
+    targetingForwardSpeed *= drivebase.maximumSpeed;
+    targetingForwardSpeed *= -1.0;
+    return targetingForwardSpeed;
   }
 
   /**
@@ -162,7 +216,8 @@ public class RobotContainer
     //Shooter Buttons
     Forward.whileTrue(new ShooterPivotForwardManual());
     back.whileTrue(new ShooterPivotBackManual());
-    Shoot.whileTrue(new ShooterShootCommand());
+    IntakeShooter.whileTrue(new ShooterShootIntakeCommand());
+    Shooter.whileTrue(new ShooterShootCommand());
 
     // CLIMBER BUTTONS
     ClimberUpPosition.onTrue(new ClimberUpPosition());
@@ -185,7 +240,7 @@ public class RobotContainer
   public Command getAutonomousCommand()
   {
     // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand(AutoChooser);
+    return autoChooser.getSelected();
   }
 
   public void setDriveMode()
