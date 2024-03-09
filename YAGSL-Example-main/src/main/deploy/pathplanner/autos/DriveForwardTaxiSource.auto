@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.35,
-      "y": 5.5
+      "x": 0.5162162739352321,
+      "y": 2.393766218659451
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DriveBackward"
+            "pathName": "DriveForwardTaxiSource"
           }
         }
       ]

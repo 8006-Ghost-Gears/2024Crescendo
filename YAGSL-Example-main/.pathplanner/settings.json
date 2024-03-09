@@ -5,6 +5,7 @@
   "pathFolders": [
     "DriveForwardShoot",
     "LeftWingDriveForwardShoot",
+    "DriveForwardTaxiSource",
     "RightWingDriveForwardShoot"
   ],
   "autoFolders": [],

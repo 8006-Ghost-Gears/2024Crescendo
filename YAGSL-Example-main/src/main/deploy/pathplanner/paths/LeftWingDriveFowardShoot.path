@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 2.2149759614834545,
+        "x": 2.22,
         "y": 6.4990263313859975
       },
       "prevControl": {
-        "x": 1.2149759614834545,
+        "x": 1.2200000000000002,
         "y": 6.4990263313859975
       },
       "nextControl": null,
@@ -40,7 +40,7 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 42.51044707800075,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "LeftWingDriveForwardShoot",

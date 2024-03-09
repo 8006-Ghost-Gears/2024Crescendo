@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.35,
-        "y": 5.5
+        "x": 0.5162162739352321,
+        "y": 2.393766218659451
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3500000000000014,
-        "y": 5.5
+        "x": 1.516216273935243,
+        "y": 2.393766218659451
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.8512884232975666,
-        "y": 5.5
+        "x": 3.673637973394016,
+        "y": 2.393766218659451
       },
       "prevControl": {
-        "x": 2.8512884232975666,
-        "y": 5.5
+        "x": 2.673637973394016,
+        "y": 2.393766218659451
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "DriveForwardTaxiSource",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

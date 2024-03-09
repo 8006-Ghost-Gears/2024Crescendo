@@ -16,6 +16,12 @@
           "data": {
             "pathName": "RightWingDriveForwardShoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShootNote"
+          }
         }
       ]
     }
