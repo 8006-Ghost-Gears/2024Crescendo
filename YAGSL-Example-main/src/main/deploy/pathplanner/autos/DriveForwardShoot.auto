@@ -16,6 +16,12 @@
           "data": {
             "pathName": "DriveForward"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
+          }
         }
       ]
     }

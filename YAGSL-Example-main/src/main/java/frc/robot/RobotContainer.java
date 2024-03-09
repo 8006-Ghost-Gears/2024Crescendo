@@ -30,6 +30,7 @@ import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeOutManual;
 import frc.robot.commands.intake.IntakeRetractedCommand;
 import frc.robot.commands.intake.IntakeRetractedManual;
+import frc.robot.commands.shooter.AutoShooter;
 import frc.robot.commands.shooter.ShooterAmpCommand;
 import frc.robot.commands.shooter.ShooterPivotBackManual;
 import frc.robot.commands.shooter.ShooterPivotForwardManual;
@@ -49,6 +50,7 @@ import java.io.File;
 import javax.print.attribute.standard.JobKOctetsSupported;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -134,7 +136,8 @@ public class RobotContainer
   public RobotContainer()
   {
     // Configure the trigger bindings
-    
+    configurePathPlanner();
+
     configureBindings();
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
@@ -164,6 +167,15 @@ public class RobotContainer
         autoChooser = AutoBuilder.buildAutoChooser();
     Shuffleboard.getTab("Pre-Match").add("Auto Chooser", autoChooser);
 
+  }
+
+  public void configurePathPlanner() {
+    // TODO: These are example NamedCommands, import the real NamedCommands from the `swerve` branch
+
+    //NamedCommands.registerCommand("Safe", superstructure.toState(SuperState.SAFE).withTimeout(3));
+    NamedCommands.registerCommand("ShootNote", new AutoShooter());
+
+    drivebase.setupPathPlanner();
   }
 
   /*// simple proportional turning control with Limelight.
