@@ -40,10 +40,10 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 13.53477209379476,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "LeftWingDriveForwardShoot",
+  "folder": null,
   "previewStartingState": {
     "rotation": 58.73626830562257,
     "velocity": 0
