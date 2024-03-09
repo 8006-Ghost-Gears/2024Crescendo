@@ -22,30 +22,30 @@ import frc.robot.RobotContainer;
 public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new climberSub. */
  CANSparkMax pivot;
- CANSparkMax shooterLeftOne;
- CANSparkMax shooterLeftTwo;
- CANSparkMax shooterRightOne;
- CANSparkMax shooterRightTwo;
+ CANSparkMax bigLeft;
+ CANSparkMax littleLeft;
+ CANSparkMax bigRight;
+ CANSparkMax littleRight;
 private final PIDController pidController = new PIDController(0.1, 0, 0);
   
   public ShooterSubsystem() {
-    shooterLeftOne = new CANSparkMax(CAN.shooterLeftOne,MotorType.kBrushless);
-    shooterLeftTwo = new CANSparkMax(CAN.shooterLeftTwo,MotorType.kBrushless);
-    shooterRightOne = new CANSparkMax(CAN.shooterRightOne,MotorType.kBrushless);
-    shooterRightTwo = new CANSparkMax(CAN.shooterRightTwo,MotorType.kBrushless);
+    bigLeft = new CANSparkMax(CAN.bigLeft,MotorType.kBrushless);
+    littleLeft = new CANSparkMax(CAN.littleLeft,MotorType.kBrushless);
+    bigRight = new CANSparkMax(CAN.bigRight,MotorType.kBrushless);
+    littleRight = new CANSparkMax(CAN.littleRight,MotorType.kBrushless);
     pivot = new CANSparkMax(CAN.pivot,MotorType.kBrushless);
     
-    shooterLeftOne.restoreFactoryDefaults();
-    shooterLeftOne.setInverted(false);
+    bigLeft.restoreFactoryDefaults();
+    bigLeft.setInverted(false);
     
-    shooterLeftTwo.restoreFactoryDefaults();
-    shooterLeftTwo.setInverted(false);
+    littleLeft.restoreFactoryDefaults();
+    littleLeft.setInverted(false);
 
-    shooterRightOne.restoreFactoryDefaults();
-    shooterRightOne.setInverted(true);
+    bigRight.restoreFactoryDefaults();
+    bigRight.setInverted(true);
     
-    shooterRightTwo.restoreFactoryDefaults();
-    shooterRightTwo.setInverted(true);
+    littleRight.restoreFactoryDefaults();
+    littleRight.setInverted(true);
     
     pivot.restoreFactoryDefaults();
     pivot.setInverted(true);
@@ -57,21 +57,21 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
 // sets shooter speed
   public void Shooter(double speed) 
   {
-      shooterLeftOne.set(speed);
-      shooterLeftTwo.set(speed);
-      shooterRightOne.set(speed);
-      shooterRightTwo.set(speed);
+      bigLeft.set(speed);
+      littleLeft.set(speed);
+      bigRight.set(speed);
+      littleRight.set(speed);
     }
 
     public void ShooterIntake(double speed)
     {
-      shooterLeftOne.set(speed);
-      shooterLeftTwo.set(speed);
-      shooterRightOne.set(speed);
-      shooterRightTwo.set(speed);
+      bigLeft.set(-speed);
+      littleLeft.set(-speed);
+      bigRight.set(-speed);
+      littleRight.set(-speed);
 
     }
-
+    
 //sets pivot speed
   public void pivot(double speed) {
     pivot.set(speed);
@@ -137,19 +137,19 @@ public void stopPivot(){
 }
 //stops shooter
 public void stopShooter(){
-  shooterLeftOne.set(0);
-  shooterLeftTwo.set(0);
-  shooterRightOne.set(0);
-  shooterRightTwo.set(0);
+  bigLeft.set(0);
+  littleLeft.set(0);
+  bigRight.set(0);
+  littleRight.set(0);
 }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("shooterLeft", shooterLeftOne.getEncoder().getPosition());
-    SmartDashboard.putNumber("shooterRight", shooterLeftTwo.getEncoder().getPosition());
-    SmartDashboard.putNumber("shooterLeft", shooterRightOne.getEncoder().getPosition());
-    SmartDashboard.putNumber("shooterRight", shooterRightTwo.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooterLeft", bigLeft.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooterRight", littleLeft.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooterLeft", bigRight.getEncoder().getPosition());
+    SmartDashboard.putNumber("shooterRight", littleRight.getEncoder().getPosition());
     SmartDashboard.putNumber("pivot", pivot.getEncoder().getPosition());
   }
 }

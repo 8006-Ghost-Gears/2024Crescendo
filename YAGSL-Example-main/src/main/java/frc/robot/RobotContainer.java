@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,6 +30,7 @@ import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeOutManual;
 import frc.robot.commands.intake.IntakeRetractedCommand;
 import frc.robot.commands.intake.IntakeRetractedManual;
+import frc.robot.commands.shooter.ShooterAmpCommand;
 import frc.robot.commands.shooter.ShooterPivotBackManual;
 import frc.robot.commands.shooter.ShooterPivotForwardManual;
 import frc.robot.commands.shooter.ShooterShootCommand;
@@ -88,7 +91,7 @@ public class RobotContainer
   JoystickButton back = new JoystickButton(operator, 2);
   JoystickButton IntakeShooter = new JoystickButton(operator, 7);
   JoystickButton Shooter = new JoystickButton(operator, 8);
-
+  JoystickButton ShooterAmp = new JoystickButton(operator,1);
   // CLIMBER BUTTONS
   POVButton ClimberUpPosition = new POVButton(tester, 0);
   POVButton ClimberDownPosition = new POVButton(tester, 180);
@@ -133,6 +136,10 @@ public class RobotContainer
     // Configure the trigger bindings
     
     configureBindings();
+
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(240, 160); //Usually (640,320) // Will work at 160, 120
+    camera.setFPS(30);
     
     
 
@@ -159,7 +166,7 @@ public class RobotContainer
 
   }
 
-  // simple proportional turning control with Limelight.
+  /*// simple proportional turning control with Limelight.
   // "proportional control" is a control algorithm in which the output is proportional to the error.
   // in this case, we are going to return an angular velocity that is proportional to the 
   // "tx" value from the Limelight.
@@ -195,7 +202,7 @@ public class RobotContainer
     targetingForwardSpeed *= drivebase.maximumSpeed;
     targetingForwardSpeed *= -1.0;
     return targetingForwardSpeed;
-  }
+  }*/
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -218,6 +225,7 @@ public class RobotContainer
     back.whileTrue(new ShooterPivotBackManual());
     IntakeShooter.whileTrue(new ShooterShootIntakeCommand());
     Shooter.whileTrue(new ShooterShootCommand());
+    ShooterAmp.whileTrue(new ShooterAmpCommand());
 
     // CLIMBER BUTTONS
     ClimberUpPosition.onTrue(new ClimberUpPosition());
