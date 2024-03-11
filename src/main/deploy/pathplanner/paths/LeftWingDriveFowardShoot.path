@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "LeftWingDriveForwardShoot",
+  "folder": "LeftWingShoot",
   "previewStartingState": {
     "rotation": 58.73626830562257,
     "velocity": 0
