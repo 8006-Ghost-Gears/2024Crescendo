@@ -36,11 +36,11 @@ import frc.robot.commands.shooter.ShooterPivotBackManual;
 import frc.robot.commands.shooter.ShooterPivotForwardManual;
 import frc.robot.commands.shooter.ShooterShootCommand;
 import frc.robot.commands.shooter.ShooterShootIntakeCommand;
+import frc.robot.commands.swervedrive.drivebase.Distance;
 import frc.robot.commands.climber.ClimberUpPosition;
 import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
 import frc.robot.commands.climber.ClimberDown;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -225,6 +225,9 @@ public class RobotContainer
    */
   private void configureBindings()
   {
+    // LIMELIGHT BUTTON
+    DistanceShoot.whileTrue(new Distance(drivebase, () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND)));
+
     // FEEDER BUTTONS
     Intake.whileTrue(new FeederIntakeCommand());
     Outtake.whileTrue(new FeederOuttakeCommand());
