@@ -63,16 +63,17 @@ public final class Constants
     //CLIMBER CONSTANTS
     public static final int leftClimber = 32;
     public static final int rightClimber = 33;
+    public static final int pivotClimber = 34;
 
     //INTAKE CONSTANTS
-    public static final int feeder = 34;
-    public static final int intake = 35;
+    public static final int feeder = 35;
+    public static final int intake = 36;
 
     //SHOOTER CONSTANTS
-    public static final int bigLeft = 37;
-    public static final int littleLeft = 38;
-    public static final int bigRight = 39;
-    public static final int littleRight= 40;
+    public static final int bigLeft = 38;
+    public static final int littleLeft = 39;
+    public static final int bigRight = 40;
+    public static final int littleRight= 41;
 
   }
 }
