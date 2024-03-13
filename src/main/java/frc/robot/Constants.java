@@ -69,7 +69,6 @@ public final class Constants
     public static final int intake = 35;
 
     //SHOOTER CONSTANTS
-    public static final int pivot = 36;
     public static final int bigLeft = 37;
     public static final int littleLeft = 38;
     public static final int bigRight = 39;

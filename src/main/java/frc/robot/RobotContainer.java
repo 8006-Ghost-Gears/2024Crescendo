@@ -32,8 +32,6 @@ import frc.robot.commands.intake.IntakeRetractedCommand;
 import frc.robot.commands.intake.IntakeRetractedManual;
 import frc.robot.commands.shooter.AutoShooter;
 import frc.robot.commands.shooter.ShooterAmpCommand;
-import frc.robot.commands.shooter.ShooterPivotBackManual;
-import frc.robot.commands.shooter.ShooterPivotForwardManual;
 import frc.robot.commands.shooter.ShooterShootCommand;
 import frc.robot.commands.shooter.ShooterShootIntakeCommand;
 import frc.robot.commands.swervedrive.drivebase.Distance;
@@ -89,8 +87,6 @@ public class RobotContainer
   JoystickButton Retracted = new JoystickButton(operator, 12);
   JoystickButton Out = new JoystickButton(operator, 11);
   //shooter buttons
-  JoystickButton Forward = new JoystickButton(operator, 4);
-  JoystickButton back = new JoystickButton(operator, 2);
   JoystickButton IntakeShooter = new JoystickButton(operator, 7);
   JoystickButton Shooter = new JoystickButton(operator, 8);
   JoystickButton ShooterAmp = new JoystickButton(operator,1);
@@ -236,8 +232,6 @@ public class RobotContainer
     Out.whileTrue(new IntakeOutManual());
 
     //Shooter Buttons
-    Forward.whileTrue(new ShooterPivotForwardManual());
-    back.whileTrue(new ShooterPivotBackManual());
     IntakeShooter.whileTrue(new ShooterShootIntakeCommand());
     Shooter.whileTrue(new ShooterShootCommand());
     ShooterAmp.whileTrue(new ShooterAmpCommand());
