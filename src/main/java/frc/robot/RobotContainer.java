@@ -42,6 +42,8 @@ import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
 import frc.robot.commands.Rumble;
 import frc.robot.commands.climber.ClimberDown;
+import frc.robot.commands.climber.PivotUpManual;
+import frc.robot.commands.climber.PivotDownManual;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -98,7 +100,8 @@ public class RobotContainer
   // CLIMBER UP AND DOWN ON TESTER CONTROLLER
   POVButton ClimberUp = new POVButton(operator, 0);
   POVButton ClimberDown = new POVButton(operator, 180);
-
+  POVButton pivotDown = new POVButton(operator, 2);
+  POVButton pivotUp = new POVButton(operator, 3);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -241,6 +244,8 @@ public class RobotContainer
     // CLIMBER BUTTONS
     ClimberUpPosition.onTrue(new ClimberUpPosition());
     ClimberDownPosition.onTrue(new ClimberDownPosition());
+    pivotDown.whileTrue(new PivotDownManual());
+    pivotUp.whileTrue(new PivotUpManual());
     // CLIMBER TESTER BUTTONS
     ClimberUp.whileTrue(new ClimberUp());
     ClimberDown.whileTrue(new ClimberDown());
