@@ -21,6 +21,7 @@ public class AutoShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timer.reset();
     timer.start();
   }
 

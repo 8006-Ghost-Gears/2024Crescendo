@@ -4,12 +4,15 @@
 
 package frc.robot.commands.swervedrive.drivebase;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -23,7 +26,6 @@ public class Distance extends Command
 {
 
   private final SwerveSubsystem swerve;
-  private final DoubleSupplier  vY;
 
   /**
    * Used to drive a swerve robot in full field-centric mode.  vX and vY supply translation inputs, where x is
@@ -32,14 +34,10 @@ public class Distance extends Command
    * will rotate to.
    *
    * @param swerve  The swerve drivebase subsystem.
-   * @param vY      DoubleSupplier that supplies the y-translation joystick input.  Should be in the range -1 to 1 with
-   *                deadband already accounted for.  Positive Y is towards the left wall when looking through the driver
-   *                station glass.
    */
-  public Distance(SwerveSubsystem swerve, DoubleSupplier vY)
+  public Distance(SwerveSubsystem swerve)
   {
     this.swerve = swerve;
-    this.vY = vY;
 
     addRequirements(swerve);
   }
@@ -54,7 +52,7 @@ public class Distance extends Command
   public void execute()
   {
 
-    swerve.driveCommandLimelight(vY);
+    swerve.AutoAlign(false);
 
     // Get the desired chassis speeds based on a 2 joystick module.
 
@@ -82,6 +80,10 @@ public class Distance extends Command
   @Override
   public void end(boolean interrupted)
   {
+    swerve.driveCommand(
+        () -> -MathUtil.applyDeadband(RobotContainer.driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(RobotContainer.driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> -RobotContainer.driver.getRightX());
   }
 
   // Returns true when the command should end.

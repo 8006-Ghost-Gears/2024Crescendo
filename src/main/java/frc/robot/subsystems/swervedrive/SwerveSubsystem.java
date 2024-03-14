@@ -10,6 +10,9 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,9 +24,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.LimelightHelpers;
+import frc.robot.RobotContainer;
+import frc.robot.Constants;
 import frc.robot.Constants.AutonConstants;
+import frc.robot.Constants.DriveTeamConstants;
+
 import java.io.File;
 import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
@@ -186,43 +194,6 @@ public class SwerveSubsystem extends SubsystemBase
                                      );
   }
 
-   // simple proportional turning control with Limelight.
-  // "proportional control" is a control algorithm in which the output is proportional to the error.
-  // in this case, we are going to return an angular velocity that is proportional to the 
-  // "tx" value from the Limelight.
-  double limelight_aim_proportional()
-  {    
-    // kP (constant of proportionality)
-    // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
-    // if it is too high, the robot will oscillate.
-    // if it is too low, the robot will never reach its target
-    // if the robot never turns in the correct direction, kP should be inverted.
-    double kP = .035;
-
-    // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
-    // your limelight 3 feed, tx should return roughly 31 degrees.
-    double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
-
-    // convert to radians per second for our drive method
-    targetingAngularVelocity *= swerveDrive.getMaximumAngularVelocity();
-
-    //invert since tx is positive when the target is to the right of the crosshair
-    targetingAngularVelocity *= -1.0;
-
-    return targetingAngularVelocity;
-  }
-
-  // simple proportional ranging control with Limelight's "ty" value
-  // this works best if your Limelight's mount height and target mount height are different.
-  // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
-  double limelight_range_proportional()
-  {    
-    double kP = .1;
-    double targetingForwardSpeed = LimelightHelpers.getTA("limelight") * kP;
-    targetingForwardSpeed *= 4.5; //swerveDrive.getMaximumVelocity();
-    targetingForwardSpeed *= -1.0;
-    return targetingForwardSpeed;
-  }
 
 
   /**
@@ -344,6 +315,115 @@ public class SwerveSubsystem extends SubsystemBase
                         false);
     });
   }
+
+  public void autoLineup() {
+    
+    double forward = RobotContainer.driver.getLeftY();
+    double strafe = LimelightHelpers.getTX("limelight");
+    final Translation2d translation2dAutoLineup = new Translation2d(forward, strafe);
+    double rotation = LimelightHelpers.getTX("limelight");
+    //double getX = driverController.getRightX();
+    if (LimelightHelpers.getLatestResults("limelight") != null) {
+        strafe = 0;
+        swerveDrive.drive(translation2dAutoLineup, ((DoubleSupplier) Rotation2d.fromDegrees(rotation)).getAsDouble(), true, false);
+        //swerveDrive.drive(translation2dAutoLineup, Rotation2d.fromDegrees(rotation).getDegrees(), true, false);
+        System.out.println("Auto Lineup Complete");
+        //swerveDrive.driveFieldOriented(getChassisSpeedsRobotRelative(),translation2dAutoLineup);
+        //Press X
+      }
+    }
+
+      double limelight_aim_proportional()
+      {    
+        
+        // kP (constant of proportionality)
+        // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
+        // if it is too high, the robot will oscillate.
+        // if it is too low, the robot will never reach its target
+        // if the robot never turns in the correct direction, kP should be inverted.
+        double kP = .035;
+    
+        // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
+        // your limelight 3 feed, tx should return roughly 31 degrees.
+        double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+    
+        // convert to radians per second for our drive method
+        targetingAngularVelocity *= Math.PI;
+    
+        //invert since tx is positive when the target is to the right of the crosshair
+        targetingAngularVelocity *= -1.0;
+    
+        return targetingAngularVelocity;
+      }
+    
+      // simple proportional ranging control with Limelight's "ty" value
+      // this works best if your Limelight's mount height and target mount height are different.
+      // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
+      double limelight_range_proportional()
+      {    
+        double kP = .1;
+        double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
+        targetingForwardSpeed *= maximumSpeed;
+        targetingForwardSpeed *= -1.0;
+        return targetingForwardSpeed;
+      }
+    
+      public void AutoAlign(boolean fieldRelative) {
+
+        final SlewRateLimiter m_xspeedLimiter = new SlewRateLimiter(3);
+        final SlewRateLimiter m_yspeedLimiter = new SlewRateLimiter(3);
+        final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+        // Get the x speed. We are inverting this because Xbox controllers return
+        // negative values when we push forward.
+        double xSpeed =
+            -m_xspeedLimiter.calculate(MathUtil.applyDeadband(RobotContainer.driver.getLeftY(), 0.02))
+                * maximumSpeed;
+    
+        // Get the y speed or sideways/strafe speed. We are inverting this because
+        // we want a positive value when we pull to the left. Xbox controllers
+        // return positive values when you pull to the right by default.
+        double ySpeed =
+            -m_yspeedLimiter.calculate(MathUtil.applyDeadband(RobotContainer.driver.getLeftX(), 0.02))
+                * maximumSpeed;
+    
+        // Get the rate of angular rotation. We are inverting this because we want a
+        // positive value when we pull to the left (remember, CCW is positive in
+        // mathematics). Xbox controllers return positive values when you pull to
+        // the right by default.
+        double rot =
+            -m_rotLimiter.calculate(MathUtil.applyDeadband(RobotContainer.driver.getRightX(), 0.02))
+                * Math.PI;
+
+        
+    
+        // while the A-button is pressed, overwrite some of the driving values with the output of our limelight methods
+        if(LimelightHelpers.getLatestResults("limelight") != null)
+        {
+            //|| LimelightHelpers.getLatestResults("limelight") != null
+            //driverController.x().getAsBoolean()
+            final var rot_limelight = limelight_aim_proportional();
+            rot = rot_limelight;
+    
+            final var forward_limelight = limelight_range_proportional();
+            xSpeed = forward_limelight;
+            Translation2d translation2d = new Translation2d(xSpeed, ySpeed);
+    
+            //while using Limelight, turn off field-relative driving.
+            fieldRelative = false;
+            swerveDrive.drive(translation2d, rot, fieldRelative, false);
+            System.out.println("Successful New Auto Align");
+        }
+    
+       
+      }
+
+
+  public void turn90Degrees(){
+    
+
+    swerveDrive.drive(new Translation2d(0, 0), 90, false, false);
+    //0 and 0 for translation2d
+}
 
   /**
    * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and

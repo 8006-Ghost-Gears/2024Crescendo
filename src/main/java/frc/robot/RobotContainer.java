@@ -11,8 +11,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +40,7 @@ import frc.robot.commands.swervedrive.drivebase.Distance;
 import frc.robot.commands.climber.ClimberUpPosition;
 import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
+import frc.robot.commands.Rumble;
 import frc.robot.commands.climber.ClimberDown;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -70,10 +73,9 @@ public class RobotContainer
 
   private final SendableChooser<Command> autoChooser;
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
+  public static final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
 
-  private final PS4Controller operator = new PS4Controller(DriveTeamConstants.operator);
+  public static final PS4Controller operator = new PS4Controller(DriveTeamConstants.operator);
 
   private final PS4Controller tester = new PS4Controller(DriveTeamConstants.tester);
 
@@ -133,7 +135,6 @@ public class RobotContainer
   {
     // Configure the trigger bindings
     configurePathPlanner();
-
     configureBindings();
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
@@ -222,7 +223,8 @@ public class RobotContainer
   private void configureBindings()
   {
     // LIMELIGHT BUTTON
-    DistanceShoot.whileTrue(new Distance(drivebase, () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND)));
+    DistanceShoot.whileTrue(new Distance(drivebase));
+    DistanceShoot.whileTrue(new Rumble());
 
     // FEEDER BUTTONS
     Intake.whileTrue(new FeederIntakeCommand());
@@ -269,4 +271,18 @@ public class RobotContainer
   {
     drivebase.setMotorBrake(brake);
   }
+
+  public static void maxRumble() {
+    driver.setRumble(GenericHID.RumbleType.kBothRumble, 1);
+    
+  
+  }
+
+  
+  public static void noRumble() {
+    driver.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+    
+  
+  }
+
 }
