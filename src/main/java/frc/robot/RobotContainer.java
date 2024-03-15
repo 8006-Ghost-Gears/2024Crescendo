@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -44,6 +45,7 @@ import frc.robot.commands.Rumble;
 import frc.robot.commands.climber.ClimberDown;
 import frc.robot.commands.climber.PivotUpManual;
 import frc.robot.commands.climber.PivotDownManual;
+import frc.robot.subsystems.Shakers;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -72,6 +74,8 @@ public class RobotContainer
   public static IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
 
   public static ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
+
+  public static Shakers m_ShakerSubsystem = new Shakers();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -227,7 +231,7 @@ public class RobotContainer
   {
     // LIMELIGHT BUTTON
     DistanceShoot.whileTrue(new Distance(drivebase));
-    DistanceShoot.whileTrue(new Rumble());
+    //DistanceShoot.whileTrue(new Rumble());
 
     // FEEDER BUTTONS
     Intake.whileTrue(new FeederIntakeCommand());
@@ -239,6 +243,7 @@ public class RobotContainer
     //Shooter Buttons
     IntakeShooter.whileTrue(new ShooterShootIntakeCommand());
     Shooter.whileTrue(new ShooterShootCommand());
+    Shooter.whileTrue(new Rumble());
     ShooterAmp.whileTrue(new ShooterAmpCommand());
 
     // CLIMBER BUTTONS
@@ -277,17 +282,6 @@ public class RobotContainer
     drivebase.setMotorBrake(brake);
   }
 
-  public static void maxRumble() {
-    driver.setRumble(GenericHID.RumbleType.kBothRumble, 1);
-    
   
-  }
-
-  
-  public static void noRumble() {
-    driver.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-    
-  
-  }
 
 }

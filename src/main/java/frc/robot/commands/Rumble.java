@@ -10,6 +10,7 @@ import frc.robot.RobotContainer;
 public class Rumble extends Command {
   /** Creates a new Rumble. */
   public Rumble() {
+    addRequirements(RobotContainer.m_ShakerSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -20,13 +21,13 @@ public class Rumble extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.maxRumble();
+    RobotContainer.m_ShakerSubsystem.maxRumble();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.noRumble();
+    RobotContainer.m_ShakerSubsystem.noRumble();
   }
 
   // Returns true when the command should end.

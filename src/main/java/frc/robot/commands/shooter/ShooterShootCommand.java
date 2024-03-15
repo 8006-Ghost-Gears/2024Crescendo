@@ -26,9 +26,9 @@ public class ShooterShootCommand extends Command {
   @Override
   public void execute() 
   {
-
-    RobotContainer.m_ShooterSubsystem.Shooter(RobotContainer.driver.getR2Axis());
-  }
+      RobotContainer.m_ShooterSubsystem.Shooter(1);
+  
+}
 
   // Called once the command ends or is interrupted.
   @Override
