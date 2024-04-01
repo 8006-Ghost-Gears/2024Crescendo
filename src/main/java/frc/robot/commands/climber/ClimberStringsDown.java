@@ -7,10 +7,11 @@ package frc.robot.commands.climber;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
-public class pivotUP extends Command {
-  /** Creates a new pivotUP. */
-  public pivotUP() {
-     addRequirements(RobotContainer.m_ClimberSubsystem);
+public class ClimberStringsDown extends Command {
+  /** Creates a new ClimberStringsDown. */
+  public ClimberStringsDown() {
+    addRequirements(RobotContainer.m_ClimberSubsystem);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -19,14 +20,15 @@ public class pivotUP extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
-  {
-    RobotContainer.m_ClimberSubsystem.pivotUp();
+  public void execute() {
+    RobotContainer.m_ClimberSubsystem.StringsDown(.08);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    RobotContainer.m_ClimberSubsystem.stopClimber();
+  }
 
   // Returns true when the command should end.
   @Override

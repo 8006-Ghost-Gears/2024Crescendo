@@ -21,7 +21,7 @@ public class ClimberDown extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.m_ClimberSubsystem.ClimberDown(0.2);
+    RobotContainer.m_ClimberSubsystem.ClimberDown(1);
   }
 
   // Called once the command ends or is interrupted.

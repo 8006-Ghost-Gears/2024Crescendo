@@ -41,11 +41,8 @@ import frc.robot.commands.swervedrive.drivebase.Distance;
 import frc.robot.commands.climber.ClimberUpPosition;
 import frc.robot.commands.climber.ClimberUp;
 import frc.robot.commands.climber.ClimberDownPosition;
-import frc.robot.commands.Rumble;
+import frc.robot.commands.climber.ClimberStringsDown;
 import frc.robot.commands.climber.ClimberDown;
-import frc.robot.commands.climber.PivotUpManual;
-import frc.robot.commands.climber.PivotDownManual;
-import frc.robot.subsystems.Shakers;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
@@ -75,8 +72,6 @@ public class RobotContainer
 
   public static ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
-  public static Shakers m_ShakerSubsystem = new Shakers();
-
   private final SendableChooser<Command> autoChooser;
 
   public static final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
@@ -104,8 +99,8 @@ public class RobotContainer
   // CLIMBER UP AND DOWN ON TESTER CONTROLLER
   POVButton ClimberUp = new POVButton(operator, 0);
   POVButton ClimberDown = new POVButton(operator, 180);
-  POVButton pivotDown = new POVButton(operator, 2);
-  POVButton pivotUp = new POVButton(operator, 3);
+  POVButton ClimberStringsDown = new POVButton(operator, 90);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -243,17 +238,15 @@ public class RobotContainer
     //Shooter Buttons
     IntakeShooter.whileTrue(new ShooterShootIntakeCommand());
     Shooter.whileTrue(new ShooterShootCommand());
-    Shooter.whileTrue(new Rumble());
     ShooterAmp.whileTrue(new ShooterAmpCommand());
 
     // CLIMBER BUTTONS
     ClimberUpPosition.onTrue(new ClimberUpPosition());
     ClimberDownPosition.onTrue(new ClimberDownPosition());
-    pivotDown.whileTrue(new PivotDownManual());
-    pivotUp.whileTrue(new PivotUpManual());
     // CLIMBER TESTER BUTTONS
     ClimberUp.whileTrue(new ClimberUp());
     ClimberDown.whileTrue(new ClimberDown());
+    ClimberStringsDown.whileTrue(new ClimberStringsDown());
 
 
     

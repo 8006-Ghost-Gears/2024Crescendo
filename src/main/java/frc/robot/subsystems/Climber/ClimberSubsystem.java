@@ -36,15 +36,15 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
     pivotClimber = new CANSparkMax(CAN.pivotClimber,MotorType.kBrushless);
     
     pivotClimber.restoreFactoryDefaults();
-    pivotClimber.setInverted(false);
+    pivotClimber.setInverted(true);
     pivotClimber.getEncoder().setPosition(0);
     
     leftClimber.restoreFactoryDefaults();
-    leftClimber.setInverted(false);
+    leftClimber.setInverted(true);
     leftClimber.getEncoder().setPosition(0);
     
     rightClimber.restoreFactoryDefaults();
-    rightClimber.setInverted(true);
+    rightClimber.setInverted(false);
     rightClimber.getEncoder().setPosition(0);
 
   }
@@ -94,31 +94,35 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
         pivotClimber.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
 
   }
+
+  public void StringsDown(double speed)
+  {
+    leftClimber.set(-speed);
+    rightClimber.set(-speed); 
+
+
+
+  }
   public void ClimberDown(double speed) {
     // Check if current position is greater than -1
     if (leftClimber.getEncoder().getPosition() > 0)
     {
       leftClimber.set(-speed);
       rightClimber.set(-speed);
+      pivotClimber.set(speed - 0.6);
     }
     else
     {
       leftClimber.set(speed);
       rightClimber.set(speed);
+      pivotClimber.set(-speed + 0.6);
     }
   }
   public void ClimberUp(double speed) {
-    if (leftClimber.getEncoder().getPosition() < 40.404354095458984)
-    {
-    leftClimber.set(-speed);
-    rightClimber.set(-speed);
-    }
-    else
-    {
-      leftClimber.set(speed);
-      rightClimber.set(speed);
+    leftClimber.set(speed);
+    rightClimber.set(speed);
+    pivotClimber.set(-speed + 0.6);
 
-    }
   }
 
   public void ClimberDown() {
@@ -188,6 +192,7 @@ public void ClimberUp() {
 public void stopClimber(){
   leftClimber.set(0); // elijah allen is not the best button boy, but his sister thoooooooo ;) Jonah:)
   rightClimber.set(0);
+  pivotClimber.set(0);
 }
 public void stopPivot(){
   pivotClimber.set(0); // elijah allen is not the best button boy, but his sister thoooooooo ;) Jonah:)
