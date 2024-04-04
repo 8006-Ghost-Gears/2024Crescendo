@@ -104,19 +104,9 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
 
   }
   public void ClimberDown(double speed) {
-    // Check if current position is greater than -1
-    if (leftClimber.getEncoder().getPosition() > 0)
-    {
       leftClimber.set(-speed);
       rightClimber.set(-speed);
       pivotClimber.set(speed - 0.6);
-    }
-    else
-    {
-      leftClimber.set(speed);
-      rightClimber.set(speed);
-      pivotClimber.set(-speed + 0.6);
-    }
   }
   public void ClimberUp(double speed) {
     leftClimber.set(speed);
