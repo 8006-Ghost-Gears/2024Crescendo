@@ -7,20 +7,12 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -31,7 +23,6 @@ import frc.robot.commands.intake.FeederIntakeCommand;
 import frc.robot.commands.intake.FeederOuttakeCommand;
 import frc.robot.commands.intake.IntakeOutCommand;
 import frc.robot.commands.intake.IntakeOutManual;
-import frc.robot.commands.intake.IntakeRetractedCommand;
 import frc.robot.commands.intake.IntakeRetractedManual;
 import frc.robot.commands.shooter.AutoShooter;
 import frc.robot.commands.shooter.ShooterAmpCommand;
@@ -48,8 +39,6 @@ import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
-
-import javax.print.attribute.standard.JobKOctetsSupported;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -233,7 +222,7 @@ public class RobotContainer
     Outtake.whileTrue(new FeederOuttakeCommand());
     // INTAKE BUTTONS
     Retracted.whileTrue(new IntakeRetractedManual());
-    Out.whileTrue(new IntakeOutManual());
+    Out.onTrue(new IntakeOutCommand());
 
     //Shooter Buttons
     IntakeShooter.whileTrue(new ShooterShootIntakeCommand());

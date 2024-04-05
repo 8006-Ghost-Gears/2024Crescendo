@@ -47,12 +47,10 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
 
   public void Feeder(double speed) {
       feeder.set(speed);
-    }
+  }
 
   public void Intake(double speed) {
     intake.set(speed);
-
-
   }
 
   public void IntakeRetracted() {
@@ -71,7 +69,7 @@ private final PIDController pidController = new PIDController(0.1, 0, 0);
 
         pidController.setTolerance(kIntakeTolerance);
 
-        intake.getPIDController().setOutputRange(-0.30, 0.30);
+        intake.getPIDController().setOutputRange(-0.50, 0.50);
 
         intake.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
 
@@ -87,7 +85,7 @@ public void IntakeOut() {
 
   final double kIntakeTolerance = 2.0;
 
-    double targetPosition = 0.5;
+    double targetPosition = 8.88;
 
     // introduce a delay of 2 seconds
 
@@ -99,7 +97,7 @@ public void IntakeOut() {
 
         pidController.setTolerance(kIntakeTolerance);
 
-        intake.getPIDController().setOutputRange(-0.30, 0.30);
+        intake.getPIDController().setOutputRange(-0.50, 0.50);
 
         intake.getPIDController().setReference(targetPosition, CANSparkMax.ControlType.kPosition);
 

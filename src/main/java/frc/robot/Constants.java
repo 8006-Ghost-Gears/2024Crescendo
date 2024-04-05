@@ -87,9 +87,9 @@ public final class Constants
 
     //SHOOTER CONSTANTS
     public static final int bigLeft = 38;
-    public static final int littleLeft = 39;
+    public static final int littleLeft = 37;
     public static final int bigRight = 40;
-    public static final int littleRight= 41;
+    public static final int littleRight= 39;
 
   }
 }
