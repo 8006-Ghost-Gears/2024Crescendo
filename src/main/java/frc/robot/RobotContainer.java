@@ -61,6 +61,8 @@ public class RobotContainer
 
   public static ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
+  public static Object m_ShakerSubsystem;
+
   private final SendableChooser<Command> autoChooser;
 
   public static final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
