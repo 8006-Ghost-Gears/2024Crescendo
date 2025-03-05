@@ -56,50 +56,8 @@ public class RobotContainer {
   public static Superstructure superstructure =
       new Superstructure(deploy, elevator);
   // The robot's subsystems and commands are defined here...
-<<<<<<< Updated upstream
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                         "swerve/neo"));
-
-  public static ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
-
-  public static IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
-
-  public static ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
-
-  public static Object m_ShakerSubsystem;
-
-  private final SendableChooser<Command> autoChooser;
-
-  public static final PS4Controller driver = new PS4Controller(DriveTeamConstants.driver);
-
-  public static final PS4Controller operator = new PS4Controller(DriveTeamConstants.operator);
-
-  private final PS4Controller tester = new PS4Controller(DriveTeamConstants.tester);
-
-  //LIMELIGHT BUTTONS
-  JoystickButton DistanceShoot = new JoystickButton(driver, 6);
-
-  // INTAKE BUTTONS
-  JoystickButton Intake = new JoystickButton(operator, 5);
-  JoystickButton Outtake = new JoystickButton(operator, 6);
-  // RETRACTED OR OUT
-  JoystickButton Retracted = new JoystickButton(operator, 12);
-  JoystickButton Out = new JoystickButton(operator, 11);
-  //shooter buttons
-  JoystickButton IntakeShooter = new JoystickButton(operator, 7);
-  JoystickButton Shooter = new JoystickButton(operator, 8);
-  JoystickButton ShooterAmp = new JoystickButton(operator,1);
-  // CLIMBER BUTTONS
-  POVButton ClimberUpPosition = new POVButton(tester, 0);
-  POVButton ClimberDownPosition = new POVButton(tester, 180);
-  // CLIMBER UP AND DOWN ON TESTER CONTROLLER
-  POVButton ClimberUp = new POVButton(operator, 0);
-  POVButton ClimberDown = new POVButton(operator, 180);
-  POVButton ClimberStringsDown = new POVButton(operator, 90);
-=======
   private final SwerveSubsystem drivebase =
       new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
->>>>>>> Stashed changes
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular

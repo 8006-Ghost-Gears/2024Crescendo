@@ -25,6 +25,7 @@ public final class Constants {
   public static final double MAX_SPEED = Units.feetToMeters(14.5);
 
   public static final boolean deployEnabled = true;
+  public static final boolean elevatorEnabled = true;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
   //  public static final class AutonConstants
@@ -53,7 +54,7 @@ public final class Constants {
   }
 
   public static final class Elevator {
-    public final static int elevator = 0;
+    public final static int elevator = 35;
 
     public static final double setpointToleranceMeters = 0.01;
 
