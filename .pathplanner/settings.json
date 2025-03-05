@@ -3,15 +3,13 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "MidShoot",
-    "SourceTaxi",
-    "LeftWingShoot",
-    "RightWingShoot"
+    "New Folder"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
-  "maxModuleSpeed": 4.5
+  "maxModuleSpeed": 4.5,
+  "choreoProjectPath": null
 }

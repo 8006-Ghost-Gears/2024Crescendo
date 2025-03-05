@@ -4,54 +4,59 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PS4Controller;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.DriveTeamConstants;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.intake.FeederIntakeCommand;
-import frc.robot.commands.intake.FeederOuttakeCommand;
-import frc.robot.commands.intake.IntakeOutCommand;
-import frc.robot.commands.intake.IntakeOutManual;
-import frc.robot.commands.intake.IntakeRetractedManual;
-import frc.robot.commands.shooter.AutoShooter;
-import frc.robot.commands.shooter.ShooterAmpCommand;
-import frc.robot.commands.shooter.ShooterShootCommand;
-import frc.robot.commands.shooter.ShooterShootIntakeCommand;
-import frc.robot.commands.swervedrive.drivebase.Distance;
-import frc.robot.commands.climber.ClimberUpPosition;
-import frc.robot.commands.climber.ClimberUp;
-import frc.robot.commands.climber.ClimberDownPosition;
-import frc.robot.commands.climber.ClimberStringsDown;
-import frc.robot.commands.climber.ClimberDown;
-import frc.robot.subsystems.Climber.ClimberSubsystem;
-import frc.robot.subsystems.Intake.IntakeSubsystem;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import java.io.File;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
- * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
- * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
- */
-public class RobotContainer
-{
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.deploy.Deploy;
+import frc.robot.subsystems.deploy.DeployIO;
+import frc.robot.subsystems.deploy.DeployIOSpark;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSpark;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import java.io.File;
+import swervelib.SwerveInputStream;
 
+/**
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and trigger mappings) should be declared here.
+ */
+public class RobotContainer {
+
+  // Replace with CommandPS4Controller or CommandJoystick if needed
+  final CommandPS4Controller driver = new CommandPS4Controller(0);
+
+  public static DeployIO deployIO =
+  Constants.deployEnabled ? new DeployIOSpark() : new DeployIO() {};
+  public static ElevatorIO elevatorIO =
+  Constants.elevatorEnabled ? new ElevatorIOSpark() : new ElevatorIO() {};
+
+  public static Deploy deploy = new Deploy(deployIO);
+  public static Elevator elevator = new Elevator(elevatorIO);
+  public static Superstructure superstructure =
+      new Superstructure(deploy, elevator);
   // The robot's subsystems and commands are defined here...
+<<<<<<< Updated upstream
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
 
@@ -91,181 +96,152 @@ public class RobotContainer
   POVButton ClimberUp = new POVButton(operator, 0);
   POVButton ClimberDown = new POVButton(operator, 180);
   POVButton ClimberStringsDown = new POVButton(operator, 90);
+=======
+  private final SwerveSubsystem drivebase =
+      new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
+>>>>>>> Stashed changes
 
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular
+   * velocity.
    */
+  SwerveInputStream driveAngularVelocity =
+      SwerveInputStream.of(
+              drivebase.getSwerveDrive(),
+              () -> driver.getLeftY() * -1,
+              () -> driver.getLeftX() * -1)
+          .withControllerRotationAxis(driver::getRightX)
+          .deadband(OperatorConstants.DEADBAND)
+          .scaleTranslation(0.8)
+          .allianceRelativeControl(true);
 
-   /*
- * POV is the D-Pad, Example: POVButton handOpen = new POVButton(operator, 90);
- * The POV buttons are referred to by the angle. Up is 0, right is 90, down is 180, and left is 270.
- * buttonNumber 1 is Square on a PS4 Controller
- * buttonNumber 2 is X on a PS4 Controller
- * buttonNumber 3 is Circle on a PS4 Controller
- * buttonNumber 4 is Triangle on a PS4 Controller
- * buttonNumber 5 is L1 on a PS4 Controller
- * buttonNumber 6 is R1 on a PS4 Controller
- * buttonNumber 7 is L2 on a PS4 Controller
- * buttonNumber 8 is R2 on a PS4 Controller
- * buttonNumber 9 is SHARE on a PS4 Controller
- * buttonNumber 10 is OPTIONS on a PS4 Controller
- * buttonNumber 11 is L3 on a PS4 Controller
- * buttonNumber 12 is R3 on a PS4 Controller
- * buttonNumber 13 is the PlayStaion Button on a PS4 Controller
- * buttonNumber 14 is the Touchpad on a PS4 Controller
- * 
- * https://www.chiefdelphi.com/t/make-motor-move-at-a-specific-rpm/396774
- * Click this link if your trying to send a motor to a certain position
- * 
- * https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/index.html
- * Click this link if your trying to send a motor to a certain position
- * 
- * If you ever run into that problem like The Java Server Crashed 5 Times and will not be restarted, (worked for me)
- * then just delete all the WPILIB VS Codes and The Visual Studio Code that is on the pc, this is because Wpilib uses their own
- * VS Code when you install the latest version!
- */
-  public RobotContainer()
-  {
+  /** Clone's the angular velocity input stream and converts it to a fieldRelative input stream. */
+  SwerveInputStream driveDirectAngle =
+      driveAngularVelocity
+          .copy()
+          .withControllerHeadingAxis(driver::getRightX, driver::getRightY)
+          .headingWhile(true);
+
+  /** Clone's the angular velocity input stream and converts it to a robotRelative input stream. */
+  SwerveInputStream driveRobotOriented =
+      driveAngularVelocity.copy().robotRelative(true).allianceRelativeControl(false);
+
+  SwerveInputStream driveAngularVelocityKeyboard =
+      SwerveInputStream.of(
+              drivebase.getSwerveDrive(), () -> -driver.getLeftY(), () -> -driver.getLeftX())
+          .withControllerRotationAxis(() -> driver.getRawAxis(2))
+          .deadband(OperatorConstants.DEADBAND)
+          .scaleTranslation(0.8)
+          .allianceRelativeControl(true);
+  // Derive the heading axis with math!
+  SwerveInputStream driveDirectAngleKeyboard =
+      driveAngularVelocityKeyboard
+          .copy()
+          .withControllerHeadingAxis(
+              () -> Math.sin(driver.getRawAxis(2) * Math.PI) * (Math.PI * 2),
+              () -> Math.cos(driver.getRawAxis(2) * Math.PI) * (Math.PI * 2))
+          .headingWhile(true)
+          .translationHeadingOffset(true)
+          .translationHeadingOffset(Rotation2d.fromDegrees(0));
+
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  public RobotContainer() {
     // Configure the trigger bindings
-    configurePathPlanner();
     configureBindings();
+    DriverStation.silenceJoystickConnectionWarning(true);
+    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
-    camera.setResolution(240, 160); //Usually (640,320) // Will work at 160, 120
-    camera.setFPS(30);
-    
-    
-
-    // Applies deadbands and inverts controls because joysticks
-    // are back-right positive while robot
-    // controls are front-left positive
-    // left stick controls translation
-    // right stick controls the angular velocity of the robot
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
-        () -> -MathUtil.applyDeadband(driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driver.getRightX());
-
-    Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
-        () -> -MathUtil.applyDeadband(driver.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-        () -> -MathUtil.applyDeadband(driver.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> -driver.getRawAxis(2));
-
-    drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
-
-        autoChooser = AutoBuilder.buildAutoChooser();
-    Shuffleboard.getTab("Pre-Match").add("Auto Chooser", autoChooser);
 
   }
-
-  public void configurePathPlanner() {
-    // TODO: These are example NamedCommands, import the real NamedCommands from the `swerve` branch
-
-    //NamedCommands.registerCommand("Safe", superstructure.toState(SuperState.SAFE).withTimeout(3));
-    NamedCommands.registerCommand("ShootNote", new AutoShooter());
-
-    drivebase.setupPathPlanner();
-  }
-
-  /*// simple proportional turning control with Limelight.
-  // "proportional control" is a control algorithm in which the output is proportional to the error.
-  // in this case, we are going to return an angular velocity that is proportional to the 
-  // "tx" value from the Limelight.
-  double limelight_aim_proportional()
-  {    
-    // kP (constant of proportionality)
-    // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
-    // if it is too high, the robot will oscillate around.
-    // if it is too low, the robot will never reach its target
-    // if the robot never turns in the correct direction, kP should be inverted.
-    double kP = .035;
-
-    // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
-    // your limelight 3 feed, tx should return roughly 31 degrees.
-    double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
-
-    // convert to radians per second for our drive method
-    targetingAngularVelocity *= drivebase.kMaxAngularSpeed;
-
-    //invert since tx is positive when the target is to the right of the crosshair
-    targetingAngularVelocity *= -1.0;
-
-    return targetingAngularVelocity;
-  }
-
-  // simple proportional ranging control with Limelight's "ty" value
-  // this works best if your Limelight's mount height and target mount height are different.
-  // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
-  double limelight_range_proportional()
-  {    
-    double kP = .1;
-    double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
-    targetingForwardSpeed *= drivebase.maximumSpeed;
-    targetingForwardSpeed *= -1.0;
-    return targetingForwardSpeed;
-  }*/
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
-   * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-   * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
    */
-  private void configureBindings()
-  {
-    // LIMELIGHT BUTTON
-    DistanceShoot.whileTrue(new Distance(drivebase));
-    //DistanceShoot.whileTrue(new Rumble());
+  private void configureBindings() {
+    Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
+    Command driveFieldOrientedDirectAngleKeyboard =
+        drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 
-    // FEEDER BUTTONS
-    Intake.whileTrue(new FeederIntakeCommand());
-    Outtake.whileTrue(new FeederOuttakeCommand());
-    // INTAKE BUTTONS
-    Retracted.whileTrue(new IntakeRetractedManual());
-    Out.onTrue(new IntakeOutCommand());
+    if (RobotBase.isSimulation()) {
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+    } else {
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    }
 
-    //Shooter Buttons
-    IntakeShooter.whileTrue(new ShooterShootIntakeCommand());
-    Shooter.whileTrue(new ShooterShootCommand());
-    ShooterAmp.whileTrue(new ShooterAmpCommand());
+    if (Robot.isSimulation()) {
+      Pose2d target = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(90));
+      // drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
+      driveDirectAngleKeyboard.driveToPose(
+          () -> target,
+          new ProfiledPIDController(5, 0, 0, new Constraints(5, 2)),
+          new ProfiledPIDController(
+              5, 0, 0, new Constraints(Units.degreesToRadians(360), Units.degreesToRadians(180))));
+      driver
+          .options()
+          .onTrue(
+              Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+      driver.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
+      driver
+          .button(2)
+          .whileTrue(
+              Commands.runEnd(
+                  () -> driveDirectAngleKeyboard.driveToPoseEnabled(true),
+                  () -> driveDirectAngleKeyboard.driveToPoseEnabled(false)));
 
-    // CLIMBER BUTTONS
-    ClimberUpPosition.onTrue(new ClimberUpPosition());
-    ClimberDownPosition.onTrue(new ClimberDownPosition());
-    // CLIMBER TESTER BUTTONS
-    ClimberUp.whileTrue(new ClimberUp());
-    ClimberDown.whileTrue(new ClimberDown());
-    ClimberStringsDown.whileTrue(new ClimberStringsDown());
+      //      driverXbox.b().whileTrue(
+      //          drivebase.driveToPose(
+      //              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+      //                              );
 
+    }
+    else{
+      driver.cross().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driver.square().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+      driver
+          .circle()
+          .whileTrue(
+              drivebase.driveToPose(
+                  new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
+      driver.options().whileTrue(Commands.none());
+      driver.share().whileTrue(Commands.none());
+      driver.R1().onTrue(new InstantCommand(
+                () -> {
+                  superstructure.requestFeed();
+                })
+            .ignoringDisable(true));
+    }
 
+    driver.L1().onTrue(new InstantCommand(
+      () -> {
+        superstructure.requestIdle();
+      })
+  .ignoringDisable(true));
     
-    
-
-  }
+  driver.R2().onTrue(new InstantCommand(
+      () -> {
+        superstructure.requestFEEDINGS();
+      })
+  .ignoringDisable(true));
+    }     
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand()
-  {
+  public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return autoChooser.getSelected();
+    return drivebase.getAutonomousCommand("New Auto");
   }
 
-  public void setDriveMode()
-  {
-    //drivebase.setDefaultCommand();
-  }
-
-  public void setMotorBrake(boolean brake)
-  {
+  public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
   }
-
-  
-
 }
